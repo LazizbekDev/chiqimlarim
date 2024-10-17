@@ -1,7 +1,8 @@
+import 'package:chiqimlarim/providers/expense_provider.dart';
 import 'package:chiqimlarim/screens/cost_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../providers/expense_provider.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -25,6 +26,10 @@ class Home extends StatelessWidget {
               itemCount: expenseProvider.costs.length,
               itemBuilder: (context, index) {
                 final cost = expenseProvider.costs[index];
+
+                final formattedDate =
+                    DateFormat.yMMMMd().format(cost.createdDate);
+
                 return Dismissible(
                   key: Key(cost.name),
                   direction: DismissDirection.endToStart,
@@ -43,6 +48,7 @@ class Home extends StatelessWidget {
                   ),
                   child: ListTile(
                     title: Text(cost.name),
+                    subtitle: Text(formattedDate),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -86,7 +92,7 @@ class Home extends StatelessWidget {
                 String costName = costNameController.text;
                 if (costName.isNotEmpty) {
                   Provider.of<ExpenseProvider>(context, listen: false)
-                      .addCost(costName, 100);
+                      .addCost(costName, 100); // This will also add the date
                 }
                 Navigator.of(context).pop();
               },

@@ -15,8 +15,13 @@ class ExpenseProvider with ChangeNotifier {
 
   // Add a cost
   void addCost(String name, double totalDeposit) {
-    _costs.add(Cost(name: name, totalDeposit: totalDeposit, expenses: []));
-    _saveData();
+    final newCost = Cost(
+      name: name,
+      totalDeposit: totalDeposit,
+      expenses: [],
+      createdDate: DateTime.now(), // Provide the current date
+    );
+    costs.add(newCost);
     notifyListeners();
   }
 

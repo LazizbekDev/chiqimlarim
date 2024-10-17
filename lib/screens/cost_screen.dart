@@ -1,5 +1,5 @@
+import 'package:chiqimlarim/utilities/formatter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:provider/provider.dart';
 import '../providers/expense_provider.dart';
 
@@ -19,11 +19,11 @@ class CostScreen extends StatelessWidget {
 
     String formatCurrency(double amount) {
       if (amount >= 1000000) {
-        return '${(amount / 1000000).toStringAsFixed(2)} mln so\'m';
+        return '${(amount / 1000000).toStringAsFixed(0)} mln so\'m';
       } else if (amount >= 1000) {
-        return '${(amount / 1000).toStringAsFixed(2)} ming so\'m';
+        return '${(amount / 1000).toStringAsFixed(0)} ming so\'m';
       } else {
-        return '${amount.toStringAsFixed(2)} so\'m';
+        return '${amount.toStringAsFixed(0)} so\'m';
       }
     }
 
@@ -93,8 +93,7 @@ class CostScreen extends StatelessWidget {
 
   void _addExpenseDialog(BuildContext context) {
     TextEditingController expenseNameController = TextEditingController();
-    TextEditingController expenseAmountController =
-        MaskedTextController(mask: '000.000.000');
+    TextEditingController expenseAmountController = TextEditingController();
 
     showDialog(
       context: context,
@@ -110,6 +109,7 @@ class CostScreen extends StatelessWidget {
               ),
               TextField(
                 controller: expenseAmountController,
+                inputFormatters: [Formatter()],
                 decoration: const InputDecoration(labelText: 'Qiymati'),
                 keyboardType: TextInputType.number,
               ),
@@ -126,7 +126,7 @@ class CostScreen extends StatelessWidget {
               onPressed: () {
                 String expenseName = expenseNameController.text;
                 double expenseAmount = double.parse(
-                    expenseAmountController.text.replaceAll('.', ''));
+                    expenseAmountController.text.replaceAll(',', ''));
                 if (expenseName.isNotEmpty && expenseAmount > 0) {
                   Provider.of<ExpenseProvider>(context, listen: false)
                       .addExpense(costName, expenseName, expenseAmount);
