@@ -1,5 +1,6 @@
 import 'package:chiqimlarim/providers/expense_provider.dart';
 import 'package:chiqimlarim/screens/home.dart';
+import 'package:chiqimlarim/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,9 +16,7 @@ class Chiqimlarim extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Monitoring',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
+        theme: appTheme,
         home: const Home(),
       ),
     );

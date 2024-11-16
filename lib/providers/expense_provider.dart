@@ -6,6 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ExpenseProvider with ChangeNotifier {
   List<Cost> _costs = [];
+  double _dividedAmount = 0;
+
+  double get dividedAmount => _dividedAmount;
 
   List<Cost> get costs => _costs;
 
@@ -13,22 +16,27 @@ class ExpenseProvider with ChangeNotifier {
     _loadData();
   }
 
-  // Add a cost
   void addCost(String name, double totalDeposit) {
     final newCost = Cost(
       name: name,
       totalDeposit: totalDeposit,
       expenses: [],
-      createdDate: DateTime.now(), // Provide the current date
+      createdDate: DateTime.now(),
     );
     costs.add(newCost);
     notifyListeners();
   }
 
-  // Add an expense to a cost
-  void addExpense(String costName, String expenseName, double amount) {
+  void updateDividedAmount(double amount) {
+    _dividedAmount = amount;
+    notifyListeners();
+  }
+
+  void addExpense(
+      String costName, String expenseName, double amount, int multiple) {
     final cost = _costs.firstWhere((c) => c.name == costName);
-    cost.expenses.add(Expense(name: expenseName, amount: amount));
+    cost.expenses
+        .add(Expense(name: expenseName, amount: amount, multiple: multiple));
     _saveData();
     notifyListeners();
   }
@@ -58,7 +66,6 @@ class ExpenseProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Load data from shared preferences
   Future<void> _loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? costJson = prefs.getStringList('costs');

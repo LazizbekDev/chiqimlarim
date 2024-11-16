@@ -1,8 +1,11 @@
 import 'package:chiqimlarim/providers/expense_provider.dart';
 import 'package:chiqimlarim/screens/cost_screen.dart';
+import 'package:chiqimlarim/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:vibration/vibration.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -13,13 +16,30 @@ class Home extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chiqimlarim'),
+        title: Text(
+          'Chiqimlarim',
+          style: GoogleFonts.inter(
+            color: accentColor,
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+          ),
+        ),
+        backgroundColor: Theme.of(context)
+            .colorScheme
+            .primary, // Primary color for the app bar
       ),
       body: expenseProvider.costs.isEmpty
-          ? const Center(
-              child: Text(
-                'Hali xarajatlar qo\'shilmagan, yangi xarajat qo\'shish uchun + ni bosing!',
-                style: TextStyle(fontSize: 18),
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(18.0),
+                child: Text(
+                  'Hali xarajatlar qo\'shilmagan, yangi xarajat qo\'shish uchun + ni bosing!',
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
             )
           : ListView.builder(
@@ -30,40 +50,58 @@ class Home extends StatelessWidget {
                 final formattedDate =
                     DateFormat.yMMMMd().format(cost.createdDate);
 
-                return Dismissible(
-                  key: Key(cost.name),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (direction) {
-                    expenseProvider.deleteCost(cost.name);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('${cost.name} o\'chirib tashlandi')),
-                    );
-                  },
-                  background: Container(
-                    color: const Color(0xFFFF0E4E),
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  child: ListTile(
-                    title: Text(cost.name),
-                    subtitle: Text(formattedDate),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CostScreen(costName: cost.name),
-                        ),
-                      );
-                    },
-                  ),
+                return Column(
+                  children: [
+                    Dismissible(
+                      key: Key(cost.name),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (direction) {
+                        Vibration.vibrate(pattern: [200, 200]);
+                        expenseProvider.deleteCost(cost.name);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${cost.name} o\'chirib tashlandi'),
+                          ),
+                        );
+                      },
+                      background: Container(
+                        color: Theme.of(context).colorScheme.error,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 16.0),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      child: ListTile(
+                        title: Text(cost.name),
+                        subtitle: Text(formattedDate),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CostScreen(costName: cost.name),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                      indent: 16,
+                      endIndent: 16,
+                    ),
+                  ],
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addCostDialog(context),
-        child: const Icon(Icons.add),
+        backgroundColor:
+            Theme.of(context).colorScheme.primary, // Primary color for FAB
+        child: const Icon(
+          Icons.add,
+          color: accentColor,
+        ),
       ),
     );
   }
